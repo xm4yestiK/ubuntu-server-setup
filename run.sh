@@ -2,21 +2,39 @@
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
-# 1. PRE-FLIGHT CHECKS & HARDCODED TOKEN
+# 1. PRE-FLIGHT CHECKS & SECURE FILE SCAFFOLDING
 if [[ "${EUID}" -ne 0 ]]; then
   echo "FATAL ERROR: Script wajib dijalankan dengan privileges root (sudo)."
   exit 1
 fi
 
-# Masukkan token baru lo tepat di dalam tanda kutip ini
-RAW_DOPPLER_TOKEN="dp.st.prd.y0aU0PaKtAixGOv2j3YcOMHwivUOfClaiB9lRKc4gdD"
+SECRET_FILE="/opt/doppler.txt"
 
-# Sanitasi string: memastikan tidak ada spasi atau enter yang ikut ter-copy
-DOPPLER_TOKEN=$(echo "$RAW_DOPPLER_TOKEN" | tr -d '\n\r ')
+# Memastikan direktori dan file aman dari akses user non-root
+if [[ ! -f "$SECRET_FILE" ]]; then
+  touch "$SECRET_FILE"
+  chmod 600 "$SECRET_FILE"
+fi
 
-if [[ -z "$DOPPLER_TOKEN" || "$DOPPLER_TOKEN" == "dp.st.prd.TOKEN_BARU_LO_DISINI" ]]; then
-  echo "FATAL ERROR: Lo belum mengganti value DOPPLER_TOKEN di dalam script."
-  exit 1
+# Sanitasi string dari dalam file (jika sudah pernah diisi sebelumnya)
+DOPPLER_TOKEN=$(cat "$SECRET_FILE" | tr -d '\n\r ')
+
+# Intervensi Manual: Jika token kosong, minta via terminal dan simpan otomatis
+if [[ -z "$DOPPLER_TOKEN" ]]; then
+  echo "🔒 Doppler Token belum ditemukan di $SECRET_FILE."
+  # read -s membuat input tidak terlihat di layar demi keamanan (anti-shoulder surfing)
+  read -s -p "Paste Token Doppler lo di sini: " INPUT_TOKEN
+  echo ""
+  
+  DOPPLER_TOKEN=$(echo "$INPUT_TOKEN" | tr -d '\n\r ')
+  
+  if [[ -z "$DOPPLER_TOKEN" ]]; then
+    echo "FATAL ERROR: Input kosong. Eksekusi dihentikan."
+    exit 1
+  fi
+  
+  echo "$DOPPLER_TOKEN" > "$SECRET_FILE"
+  echo "✅ Token berhasil di-inject dan diamankan di $SECRET_FILE"
 fi
 
 # 2. BASE DEPENDENCIES
