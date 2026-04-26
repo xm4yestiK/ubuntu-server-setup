@@ -9,7 +9,7 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 # Masukkan token baru lo tepat di dalam tanda kutip ini
-RAW_DOPPLER_TOKEN="dp.st.prd.TOKEN_BARU_LO_DISINI"
+RAW_DOPPLER_TOKEN="dp.st.prd.nhin3goetNSKSJEjkNMdUrobpFpe8OW1IFYQX1BuTMt"
 
 # Sanitasi string: memastikan tidak ada spasi atau enter yang ikut ter-copy
 DOPPLER_TOKEN=$(echo "$RAW_DOPPLER_TOKEN" | tr -d '\n\r ')
