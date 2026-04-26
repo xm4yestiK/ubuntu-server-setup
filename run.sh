@@ -3,7 +3,7 @@ set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 # Hardcoded Doppler Service Token
-DOPPLER_TOKEN="dp.st.prd.lFKITjGrlLjq3F9npOC3FcWgH6PZcastHHsX0hlbQtR"
+DOPPLER_TOKEN="dp.st.prd.nhin3goetNSKSJEjkNMdUrobpFpe8OW1IFYQX1BuTMt"
 
 apt-get update
 apt-get upgrade -y
